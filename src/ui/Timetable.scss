@@ -8,7 +8,6 @@
 	&__grid {
 		display: grid;
 		width: 100%;
-		grid-template-columns: 1fr 1fr 1fr;
 		padding-left: 20px;
 		padding-right: 20px;
 	}
@@ -32,6 +31,12 @@
 		}
 		&:last-child {
 			padding-right: 0;
+		}
+		&_left {
+			text-align: left;
+		}
+		&_right {
+			text-align: right;
 		}
 	}
 }

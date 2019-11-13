@@ -6,7 +6,14 @@ export default function App() {
     const data = useAxios('/api/table');
     return (
         <div>
-            <Timetable data={data}/>
+            <Timetable
+                data={data}
+                options={{
+                    route: { title: '№', align: 'left', width: '10%' },
+                    destination: { title: 'Направление', align: 'left', width: '1fr' },
+                    arrival: { title: 'Прибытие', align: 'right', width: '20%' }
+                }}
+            />
         </div>
     );
 }

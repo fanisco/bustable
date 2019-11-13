@@ -3,21 +3,34 @@ import './Timetable.scss';
 import Timer from './Timer'
 
 export default function Timetable(props) {
-    const [headers, columns] = dataTransform(props.data);
+    const [headers, columns] = dataTransform(props.data, props.options);
     return (
         <div className="Timetable">
             <div className="Timetable__timer">
                 <Timer/>
             </div>
-            <div className="Timetable__grid">
+            <div className="Timetable__grid" style={'grid-template-columns: 1fr 1fr 1fr;'}>
                 <header className="Timetable__header">
-                    {headers.map((header, i) => <div key={i} className="Timetable__cell">{header}</div>)}
+                    {headers.map((header, i) => {
+                        const options = props.options[header];
+                        return (
+                            <div key={i} className={`Timetable__cell Timetable__cell_${options.align || 'left'}`}>{
+                                options.title || header
+                            }</div>
+                        );
+                    })}
                 </header>
                 <main className="Timetable__content">
                     {columns.map((row, i) => {
                         return (
                             <div key={i} className="Timetable__row">
-                                {row.map((value, j) => <div key={j} className="Timetable__cell">{value}</div>)}
+                                {row.map((value, j) => {
+                                    const header = headers[j];
+                                    const options = props.options[header];
+                                    return (
+                                        <div key={j} className={`Timetable__cell Timetable__cell_${options.align || 'left'}`}>{value}</div>
+                                    );
+                                })}
                             </div>
                         );
                     })}
@@ -27,7 +40,7 @@ export default function Timetable(props) {
     );
 }
 
-function dataTransform(rows) {
+function dataTransform(rows, options) {
     const headers = [];
     const columns = [];
     for (const row of rows) {

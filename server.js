@@ -12,11 +12,11 @@ app.get('/', function (req, res) {
 
 app.get('/api/table', function (req, res) {
     return res.json([
-        { route: '1',  stop: 'Test bus stop', destination: 'Destination test bust stop 1' },
-        { route: '7',  stop: 'Test bus stop', destination: 'Destination test bust stop 2' },
-        { route: '27', stop: 'Test bus stop', destination: 'Destination test bust stop 3' },
-        { route: '32', stop: 'Test bus stop', destination: 'Destination test bust stop 4' },
-        { route: '37', stop: 'Test bus stop', destination: 'Destination test bust stop 5' },
+        { route: '1',  destination: 'Destination test bust stop 1', arrival: '0:35' },
+        { route: '7',  destination: 'Destination test bust stop 2', arrival: '2:10' },
+        { route: '27', destination: 'Destination test bust stop 3', arrival: '5:30' },
+        { route: '32', destination: 'Destination test bust stop 4', arrival: '10:10' },
+        { route: '37', destination: 'Destination test bust stop 5', arrival: '14:00' },
     ]);
 });
 
