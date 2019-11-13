@@ -1,0 +1,13 @@
+.Timetable {
+	color: #ffb535;
+	background-color: #202020;
+
+	&__header {
+		padding: 10px 20px;
+		display: flex;
+		flex-direction: column;
+	}
+	&__timer {
+		align-self: flex-end;
+	}
+}

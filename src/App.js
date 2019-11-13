@@ -1,10 +1,10 @@
 import React from 'react';
-import './App.css';
+import Timetable from "./ui/Timetable";
 
 function App() {
     return (
         <div>
-            App
+            <Timetable/>
         </div>
     );
 }
