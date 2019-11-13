@@ -2,12 +2,36 @@
 	color: #ffb535;
 	background-color: #202020;
 
-	&__header {
-		padding: 10px 20px;
-		display: flex;
-		flex-direction: column;
-	}
 	&__timer {
 		align-self: flex-end;
+	}
+	&__grid {
+		display: grid;
+		width: 100%;
+		grid-template-columns: 1fr 1fr 1fr;
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+	&__header {
+		display: contents;
+	}
+	&__content {
+		display: contents;
+	}
+	&__row {
+		display: contents;
+		font-size: 24px;
+		line-height: 1;
+	}
+	&__cell {
+		padding: 10px;
+		border-bottom: 1px solid #ffffff10;
+
+		&:first-child {
+			padding-left: 0;
+		}
+		&:last-child {
+			padding-right: 0;
+		}
 	}
 }

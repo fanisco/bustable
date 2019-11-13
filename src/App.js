@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Timetable from "./ui/Timetable";
 
-function App() {
+export default function App() {
+    const data = useAxios('/api/table');
     return (
         <div>
-            <Timetable/>
+            <Timetable data={data}/>
         </div>
     );
 }
 
-export default App;
+const useAxios = (url) => {
+    const [data, setData] = useState([]);
+    useEffect(() => {
+        axios.get(url).then((request) => {
+            setData(request.data);
+        })
+    }, []);
+    return data;
+};
