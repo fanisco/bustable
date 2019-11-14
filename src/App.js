@@ -8,7 +8,7 @@ export default function App() {
         <div>
             <Timetable
                 data={data}
-                options={{
+                columns={{
                     route: { title: '№', align: 'left', width: '10%' },
                     destination: { title: 'Направление', align: 'left', width: '1fr' },
                     arrival: { title: 'Прибытие', align: 'right', width: '20%' }

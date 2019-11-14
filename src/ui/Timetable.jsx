@@ -2,35 +2,28 @@ import React from 'react';
 import './Timetable.scss';
 import Timer from './Timer'
 
+/**
+ * @param {Object} props
+ */
 export default function Timetable(props) {
-    const [headers, columns] = dataTransform(props.data, props.options);
+    const { data, columns } = props;
+    const [headers, widths, items] = dataTransform(data, columns);
     return (
         <div className="Timetable">
             <div className="Timetable__timer">
                 <Timer/>
             </div>
-            <div className="Timetable__grid" style={'grid-template-columns: 1fr 1fr 1fr;'}>
+            <div className="Timetable__grid" style={{
+                'gridTemplateColumns': widths.join(' ')
+            }}>
                 <header className="Timetable__header">
-                    {headers.map((header, i) => {
-                        const options = props.options[header];
-                        return (
-                            <div key={i} className={`Timetable__cell Timetable__cell_${options.align || 'left'}`}>{
-                                options.title || header
-                            }</div>
-                        );
-                    })}
+                    {headers.map((header, i) => <Cell key={i} align={columns[header].align} value={columns[header].title}/>)}
                 </header>
-                <main className="Timetable__content">
-                    {columns.map((row, i) => {
+                <main className="Timetable__items">
+                    {items.map((item, i) => {
                         return (
                             <div key={i} className="Timetable__row">
-                                {row.map((value, j) => {
-                                    const header = headers[j];
-                                    const options = props.options[header];
-                                    return (
-                                        <div key={j} className={`Timetable__cell Timetable__cell_${options.align || 'left'}`}>{value}</div>
-                                    );
-                                })}
+                                {item.columns.map((column, j) => <Cell key={j} {...column}/>)}
                             </div>
                         );
                     })}
@@ -40,16 +33,41 @@ export default function Timetable(props) {
     );
 }
 
-function dataTransform(rows, options) {
+/**
+ * @param {Object} props
+ */
+const Cell = (props) => {
+    return (
+        <div className={`Timetable__cell Timetable__cell_${props.align}`}>{props.value}</div>
+    );
+};
+
+/**
+ * @param {Array} rows
+ * @param {Object} columns
+ */
+function dataTransform(rows, columns) {
     const headers = [];
-    const columns = [];
+    const widths = [];
+    const items = [];
     for (const row of rows) {
-        for (const key of Object.keys(row)) {
-            if (headers.indexOf(key) === -1) {
-                headers.push(key);
+        const item = { columns: [] };
+        const names = Object.keys(columns);
+        for (const name of names) {
+            if (headers.indexOf(name) === -1) {
+                headers.push(name);
+                widths.push(columns[name].width);
             }
+            item.columns.push({
+                name: name,
+                value: row[name],
+                title: columns[name].title,
+                align: columns[name].align || 'left',
+                width: columns[name].width || '1fr',
+            });
         }
-        columns.push(Object.values(row));
+        items.push(item);
+
     }
-    return [headers, columns];
+    return [headers, widths, items];
 }
