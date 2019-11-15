@@ -2,6 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
+const db = require('./server/db/connection');
+const Route = require('./server/db/models/Route');
+
+// Route.find({ type: 'bus' }, (err, rows) => {
+//     console.log(rows);
+// });
 
 app.use(express.static(path.join(__dirname, 'build')));
 
