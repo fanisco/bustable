@@ -3,7 +3,7 @@ import axios from 'axios';
 import Timetable from "./ui/Timetable";
 
 export default function App() {
-    const data = useAxios('/api/table');
+    const data = useAxios('/api/table?route=11&time=11:00');
     return (
         <div>
             <Timetable
