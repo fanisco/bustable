@@ -10,8 +10,11 @@ export default function Timetable(props) {
     const [headers, widths, items] = dataTransform(data, columns);
     return (
         <div className="Timetable">
-            <div className="Timetable__timer">
-                <Timer/>
+            <div className="Timetable__top">
+                <div className="Timetable__stop">Callate la boca</div>
+                <div className="Timetable__timer">
+                    <Timer/>
+                </div>
             </div>
             <div className="Timetable__grid" style={{
                 'gridTemplateColumns': widths.join(' ')
