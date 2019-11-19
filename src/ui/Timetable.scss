@@ -2,8 +2,19 @@
 	color: #ffb535;
 	background-color: #202020;
 
+	&__top {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		padding: 10px 20px;
+	}
+	&__stop {
+		font-size: 28px;
+		line-height: 1;
+	}
 	&__timer {
-		align-self: flex-end;
+
 	}
 	&__grid {
 		display: grid;
