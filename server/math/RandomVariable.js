@@ -15,8 +15,8 @@ function variance(x) {
 }
 
 function standard(x) {
-    const mx = variance(x);
-    return Math.sqrt(mx);
+    const dx = variance(x);
+    return Math.sqrt(dx);
 }
 
 module.exports.px =
