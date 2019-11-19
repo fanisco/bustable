@@ -6,10 +6,16 @@ function probability(list) {
 }
 
 function expected(x) {
+    if (!x[0].length) {
+        x = probability(x);
+    }
     return x.map(value => value[0] * value[1]).reduce((sum, i) => sum + i, 0);
 }
 
 function variance(x) {
+    if (!x[0].length) {
+        x = probability(x);
+    }
     const mx = expected(x);
     return expected(x.map(value => [Math.pow(value[0] - mx, 2), value[1]]));
 }
@@ -19,11 +25,11 @@ function standard(x) {
     return Math.sqrt(dx);
 }
 
-module.exports.px =
+module.exports.px = probability;
 module.exports.probability = probability;
-module.exports.mx =
+module.exports.mx = expected;
 module.exports.expected = expected;
-module.exports.dx =
+module.exports.dx = variance;
 module.exports.variance = variance;
-module.exports.standard =
+module.exports.standard = standard;
 module.exports.deviation = standard;
