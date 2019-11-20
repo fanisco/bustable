@@ -21,8 +21,13 @@ function timeFormat(dateTime, format = 'his') {
 }
 
 function timeSub(time1, time2) {
-    return new Date('1970-01-01T' + time1) - new Date('1970-01-01T' + time2);
+    return timestampTime(time1) - timestampTime(time2);
+}
+
+function timestampTime(time) {
+    return (new Date('1970-01-01T' + time)).getTime()
 }
 
 module.exports.timeFormat = timeFormat;
 module.exports.timeSub = timeSub;
+module.exports.timestampTime = timestampTime;

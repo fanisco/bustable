@@ -13,7 +13,7 @@ export default class App extends Component {
         });
     }
     async getTable() {
-        const url = '/api/table?route=11&stop=Гостиница Калининград';
+        const url = '/api/table?stop=Гостиница Калининград';
         const result = await axios(url);
         this.setState({ data: result.data });
     }

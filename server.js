@@ -12,7 +12,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/api/table', function (req, res) {
-    Table.get({ route: req.query.route, stop: req.query.stop }).then(result => res.json(result));
+    Table.get({ stopName: req.query.stop }).then(result => res.json(result));
 });
 
 app.listen(port, function () {

@@ -2,40 +2,34 @@ const connection = require('../db/connection');
 const rv = require('../math/RandomVariable');
 
 const Statistic = {
-    query: ({ route, stop }) => `
+    query: ({ stopId, routeId }) => `
 SELECT
     rs.route_id AS routeId, rs.dest_id AS destId, rs.stop_id AS stopId, rs.number, ms.values
 FROM
     logistics.movement_statistic ms,
-    logistics.routes_stops rs,
-    logistics.routes r
+    logistics.routes_stops rs
 WHERE 1
     AND rs.number < (
         SELECT
-            rs.number
+            number
         FROM
-            logistics.stops s,
-            logistics.routes r,
-            logistics.routes_stops rs
+            logistics.routes_stops
         WHERE 1
-            AND s.name = '${stop}'
-            AND r.number = '${route}'
-            AND s.id = rs.stop_id
-            AND r.id = rs.route_id
+            AND stop_id = '${stopId}'
+            AND route_id = '${routeId}'
     )
-    AND r.number = '${route}'
+    AND ms.route_id = '${routeId}'
     AND ms.route_id = rs.route_id
     AND ms.stop_id = rs.stop_id
-    AND r.id = rs.route_id
 ORDER BY rs.number ASC
 `,
 
     /**
      * Get rows from database with given params.
      */
-    async get(params) {
+    async get({ stopId, routeId }) {
         return new Promise((resolve, reject) => {
-            connection.query(this.query(params), (err, rows) => {
+            connection.query(this.query({ stopId, routeId }), (err, rows) => {
                 const result = [];
                 for (const row of rows) {
                     const values = row.values.split(',').map(value => parseFloat(value));
