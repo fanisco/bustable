@@ -1,29 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Timetable from "./ui/Timetable";
 
-export default function App() {
-    const data = useAxios('/api/table?route=11&stop=Гостиница Калининград');
-    return (
-        <div>
-            <Timetable
-                data={data}
-                columns={{
-                    route: { title: '№', align: 'left', width: '10%' },
-                    destination: { title: 'Направление', align: 'left', width: '1fr' },
-                    arrival: { title: 'Прибытие', align: 'right', width: '20%', countdown: true }
-                }}
-            />
-        </div>
-    );
+export default class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { data: [] };
+    }
+    componentDidMount() {
+        this.getTable().then(() => {
+            setInterval(() => this.getTable(), 60000);
+        });
+    }
+    async getTable() {
+        const url = '/api/table?route=11&stop=Гостиница Калининград';
+        const result = await axios(url);
+        this.setState({ data: result.data });
+    }
+    render() {
+        return (
+            <div>
+                <Timetable
+                    data={this.state.data}
+                    columns={{
+                        route: { title: '№', align: 'left', width: '10%' },
+                        destination: { title: 'Направление', align: 'left', width: '1fr' },
+                        arrival: { title: 'Прибытие', align: 'right', width: '20%', countdown: true }
+                    }}
+                />
+            </div>
+        );
+    }
 }
-
-const useAxios = (url) => {
-    const [data, setData] = useState([]);
-    useEffect(() => {
-        axios.get(url).then((request) => {
-            setData(request.data);
-        })
-    }, []);
-    return data;
-};
