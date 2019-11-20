@@ -36,7 +36,7 @@ ORDER BY t.time ASC
 
                     // Calculate estimate time for each row
                     resolve(rows.map(row => {
-                        return { ...row, time: timeFormat(timeSub(row.arrival, time)) };
+                        return { ...row, time: timeFormat(timeSub(row.arrival, time), 'hi') };
                     }));
                 });
             });
