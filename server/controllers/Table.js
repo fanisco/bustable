@@ -1,5 +1,6 @@
 const connection = require('../db/connection');
 const Statistic = require('./Statistic');
+const { timeSub, timeFormat } = require('../../src/helpers/Time');
 
 const Table = {
     query: ({ route, time, delay } = {}) => `
@@ -28,47 +29,19 @@ ORDER BY t.time ASC
 
                 // Calculate delay and current time
                 const delay = stats.map(item => item.mx).reduce((sum, i) => sum + i, 0);
-                const time = this.timeFormat(new Date());
+                const time = timeFormat(new Date());
 
                 // With resulted data get rows
                 connection.query(this.query({ route, delay, time }), (err, rows) => {
 
                     // Calculate estimate time for each row
                     resolve(rows.map(row => {
-                        return { ...row, time: this.timeFormat(this.timeSub(row.arrival, time)) };
+                        return { ...row, time: timeFormat(timeSub(row.arrival, time)) };
                     }));
                 });
             });
         });
     },
-
-    /**
-     * Substract one time from another.
-     */
-    timeSub(time1, time2) {
-        return new Date('1970-01-01T' + time1 + 'Z') - new Date('1970-01-01T' + time2 + 'Z');
-    },
-
-    /**
-     * Format date object or timestamp.
-     */
-    timeFormat(dateTime) {
-        let h, m, s;
-        if (dateTime instanceof Date) {
-            h = dateTime.getHours();
-            m = dateTime.getMinutes();
-            s = dateTime.getSeconds();
-        } else {
-            const time = dateTime / 1000;
-            h = Math.floor(time / 3600);
-            m = Math.floor((time - h * 3600) / 60);
-            s = Math.floor(time - (h * 3600) - (m * 60));
-        }
-        h = (h < 10 ? '0' : '') + h;
-        m = (m < 10 ? '0' : '') + m;
-        s = (s < 10 ? '0' : '') + s;
-        return `${h}:${m}:${s}`;
-    }
 };
 
 module.exports = Table;

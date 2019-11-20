@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const Table = require('./server/controllers/Table');
 const app = express();
+const port = process.env.PORT || 8080;
 
 app.use(express.static(path.join(__dirname, 'build')));
 
@@ -13,8 +14,6 @@ app.get('/', function (req, res) {
 app.get('/api/table', function (req, res) {
     Table.get({ route: req.query.route, stop: req.query.stop }).then(result => res.json(result));
 });
-
-const port = process.env.PORT || 8080;
 
 app.listen(port, function () {
     console.log(`App listening on port ${port}!`);
