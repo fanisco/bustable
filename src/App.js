@@ -3,7 +3,7 @@ import axios from 'axios';
 import Timetable from "./ui/Timetable";
 
 export default function App() {
-    const data = useAxios('/api/table?route=11&time=11:00');
+    const data = useAxios('/api/table?route=11&stop=Гостиница Калининград');
     return (
         <div>
             <Timetable
@@ -11,7 +11,7 @@ export default function App() {
                 columns={{
                     route: { title: '№', align: 'left', width: '10%' },
                     destination: { title: 'Направление', align: 'left', width: '1fr' },
-                    arrival: { title: 'Прибытие', align: 'right', width: '20%' }
+                    time: { title: 'Прибытие', align: 'right', width: '20%' }
                 }}
             />
         </div>
