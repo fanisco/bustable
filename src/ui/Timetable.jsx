@@ -40,17 +40,9 @@ export default function Timetable(props) {
  * @param {Object} props
  */
 const Cell = (props) => {
-    if (props.time) {
-        return (
-            <div className={`Timetable__cell Timetable__cell_${props.align}`}>
-                <Timer time={props.value} format="hi" countdown={props.countdown}/>
-            </div>
-        );
-    } else {
-        return (
-            <div className={`Timetable__cell Timetable__cell_${props.align}`}>{props.value}</div>
-        );
-    }
+    return (
+        <div className={`Timetable__cell Timetable__cell_${props.align}`}>{props.value}</div>
+    );
 };
 
 /**
@@ -75,8 +67,7 @@ function dataTransform(rows, columns) {
                 title: columns[name].title,
                 align: columns[name].align || 'left',
                 width: columns[name].width || '1fr',
-                time: columns[name].countdown,
-                countdown: columns[name].countdown
+                options: columns[name].options
             });
         }
         items.push(item);

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import Timetable from "./ui/Timetable";
 
-export default class App extends React.Component {
+export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = { data: [] };
@@ -25,7 +25,7 @@ export default class App extends React.Component {
                     columns={{
                         route: { title: '№', align: 'left', width: '10%' },
                         destination: { title: 'Направление', align: 'left', width: '1fr' },
-                        arrival: { title: 'Прибытие', align: 'right', width: '20%', countdown: true }
+                        time: { title: 'Прибытие', align: 'right', width: '20%' }
                     }}
                 />
             </div>

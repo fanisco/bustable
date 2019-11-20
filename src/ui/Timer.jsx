@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
 import './Timer.scss';
-import { timeSub, timeFormat } from '../helpers/Time';
+import { timeFormat } from '../helpers/Time';
 
-export default function Timer({ time, format, countdown = false }) {
-    const [value, setValue] = useState(display(time, format, countdown));
+export default function Timer({ value, format }) {
+    const [displayValue, setDisplayValue] = useState(display(value, format));
     setInterval(() => {
-        setValue(display(time, format, countdown));
+        setDisplayValue(display(value, format));
     }, 1000);
     return (
-        <div className="Timer">{value}</div>
+        <div className="Timer">{displayValue}</div>
     );
 }
 
-function display(dateTime = new Date(), format, countdown) {
-    if (countdown) {
-        dateTime = timeSub(dateTime, timeFormat(new Date()));
-    }
-    return timeFormat(dateTime, format);
+function display(value = new Date(), format) {
+    return timeFormat(value, format);
 }
