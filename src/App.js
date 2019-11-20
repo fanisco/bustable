@@ -11,7 +11,7 @@ export default function App() {
                 columns={{
                     route: { title: '№', align: 'left', width: '10%' },
                     destination: { title: 'Направление', align: 'left', width: '1fr' },
-                    time: { title: 'Прибытие', align: 'right', width: '20%' }
+                    arrival: { title: 'Прибытие', align: 'right', width: '20%', countdown: true }
                 }}
             />
         </div>
