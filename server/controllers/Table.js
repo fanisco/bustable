@@ -1,4 +1,4 @@
-const connection = require('../db/connection');
+const connection = require('../db/connection').getInstance();
 const Statistic = require('./Statistic');
 const Stop = require('../models/Stop');
 const { timeSub, timeFormat, timestampTime } = require('../../src/helpers/Time');
