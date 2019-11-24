@@ -1,10 +1,10 @@
 const connection = require('../db/connection').getInstance();
 const Statistic = require('./Statistic');
 const Stop = require('../models/Stop');
-const { timeSub, timeFormat, timestampTime } = require('../../src/helpers/Time');
+const { timeSub, timeFormat } = require('../../src/helpers/Time');
 
 const Table = {
-    query: ({ routeId, time, delay } = {}) => `
+    query: ({ routeId, time, timeLimit, delay } = {}) => `
 SELECT
     r.number AS route, s1.name AS destination, date_add(t.time, INTERVAL ${delay} MINUTE) AS arrival
 FROM
@@ -16,6 +16,7 @@ FROM
 WHERE 1
     AND r.id = '${routeId}'
     AND date_add(t.time, INTERVAL ${delay} MINUTE) >= '${time}'
+    AND date_add(t.time, INTERVAL ${delay} MINUTE) <= '${timeLimit}'
 ORDER BY t.time ASC
 `,
 
@@ -26,7 +27,9 @@ ORDER BY t.time ASC
         return new Promise(async (resolve, reject) => {
 
             // Current time
-            const time = timeFormat(new Date());
+            const now = new Date();
+            const time = timeFormat(now);
+            const timeLimit = timeFormat(new Date(now.getTime() + 3 * 60 * 60 * 1000));
 
             // Get busstop and its routes
             const [stop] = await Stop.where({ id: stopId });
@@ -37,7 +40,7 @@ ORDER BY t.time ASC
             const delayedRoutes = this.mergeDelays(routes, stats);
 
             // With resulted data get rows
-            const tables = await this.getTableRoutes(delayedRoutes, time);
+            const tables = await this.getTableRoutes(delayedRoutes, time, timeLimit);
 
             resolve(this.mergeTables(tables));
         });
@@ -80,16 +83,16 @@ ORDER BY t.time ASC
     /**
      *
      */
-    async getTableRoutes(routes, time) {
-        return Promise.all(routes.map(({ routeId, delay }) => this.getTableRoute(routeId, time, delay)));
+    async getTableRoutes(routes, time, timeLimit) {
+        return Promise.all(routes.map(({ routeId, delay }) => this.getTableRoute(routeId, time, timeLimit, delay)));
     },
 
     /**
      *
      */
-    async getTableRoute(routeId, time, delay) {
+    async getTableRoute(routeId, time, timeLimit, delay) {
         return new Promise((resolve, reject) => {
-            connection.query(this.query({ routeId, time, delay }), (err, rows) => {
+            connection.query(this.query({ routeId, time, timeLimit, delay }), (err, rows) => {
 
                 // Calculate estimate time for each row
                 resolve(rows.map(row => {
