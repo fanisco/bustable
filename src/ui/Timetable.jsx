@@ -6,8 +6,8 @@ import Timer from './Timer'
  * @param {Object} props
  */
 export default function Timetable(props) {
-    const { stop, data, columns } = props;
-    const [headers, widths, items] = dataTransform(data, columns);
+    const { stop, table, columns } = props;
+    const [headers, widths, items] = dataTransform(table, columns);
     return (
         <div className="Timetable">
             <div className="Timetable__top">
