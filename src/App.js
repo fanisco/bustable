@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Timetable from "./ui/Timetable";
+import Timetable, { TimeFormat } from "./ui/Timetable";
 
 export default class App extends Component {
     constructor(props) {
@@ -43,7 +43,7 @@ export default class App extends Component {
                     columns={{
                         route: { title: '№', align: 'left', width: '10%' },
                         destination: { title: 'Направление', align: 'left', width: '1fr' },
-                        time: { title: 'Прибытие', align: 'right', width: '20%' }
+                        timestamp: { title: 'Прибытие', align: 'right', width: '20%', template: TimeFormat }
                     }}
                 />
             </div>

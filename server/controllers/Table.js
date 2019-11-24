@@ -96,8 +96,7 @@ ORDER BY t.time ASC
                     const arrivalTime = timeSub(row.arrival, time);
                     return {
                         ...row,
-                        timestamp: arrivalTime,
-                        time: timeFormat(arrivalTime, 'hi')
+                        timestamp: arrivalTime
                     };
                 }));
             });

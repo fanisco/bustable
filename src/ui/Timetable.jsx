@@ -1,6 +1,7 @@
 import React from 'react';
 import './Timetable.scss';
-import Timer from './Timer'
+import Timer from './Timer';
+import { wordsFormat } from '../helpers/Time';
 
 /**
  * @param {Object} props
@@ -39,10 +40,14 @@ export default function Timetable(props) {
 /**
  * @param {Object} props
  */
-const Cell = (props) => {
+export const Cell = (props) => {
     return (
-        <div className={`Timetable__cell Timetable__cell_${props.align}`}>{props.value}</div>
+        <div className={`Timetable__cell Timetable__cell_${props.align}`}>{props.template ? props.template(props) : props.value}</div>
     );
+};
+
+export const TimeFormat = (props) => {
+    return wordsFormat(props.value, 'h час|i мин', true);
 };
 
 /**
@@ -67,7 +72,8 @@ function dataTransform(rows, columns) {
                 title: columns[name].title,
                 align: columns[name].align || 'left',
                 width: columns[name].width || '1fr',
-                options: columns[name].options
+                options: columns[name].options,
+                template: columns[name].template
             });
         }
         items.push(item);
