@@ -16,7 +16,8 @@ app.get('/api/stop/:id', function (req, res) {
 });
 
 app.get('/api/table', function (req, res) {
-    Table.get({ stopName: req.query.stop }).then(result => res.json(result));
+    console.log(req.query);
+    Table.get({ stopId: req.query.stopId }).then(result => res.json(result));
 });
 
 app.listen(process.env.PORT, function () {

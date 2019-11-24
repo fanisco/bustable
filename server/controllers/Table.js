@@ -22,14 +22,14 @@ ORDER BY t.time ASC
     /**
      * Get rows from database with given params.
      */
-    async get({ stopName }) {
+    async get({ stopId }) {
         return new Promise(async (resolve, reject) => {
 
             // Current time
             const time = timeFormat(new Date());
 
             // Get busstop and its routes
-            const [stop] = await Stop.getByName(stopName);
+            const [stop] = await Stop.where({ id: stopId });
             const routes = await stop.getRoutes();
 
             // Get stats by routes of stop and calculate delays

@@ -15,12 +15,12 @@ export default class App extends Component {
         this.setState({ stop });
 
         // Table rows
-        const table = await this.getTable(stop.name);
+        const table = await this.getTable(stop.id);
         this.setState({ table });
 
         // Refresh data
         setInterval(async () => {
-            const table = await this.getTable();
+            const table = await this.getTable(stop.id);
             this.setState({ table });
         }, 60000);
     }
@@ -30,7 +30,7 @@ export default class App extends Component {
         return res.data;
     }
     async getTable(stopId) {
-        const url = `/api/table?stop=${stopId}`;
+        const url = `/api/table?stopId=${stopId}`;
         const res = await axios(url);
         return res.data;
     }
