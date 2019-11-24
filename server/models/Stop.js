@@ -13,13 +13,22 @@ class Stop {
             });
         });
     }
-    static async getByName(name) {
-        const query = `SELECT id, name FROM logistics.stops WHERE name = '${name}'`;
+    static async where(params) {
+        const query = `SELECT id, name FROM logistics.stops ${Stop.analyzeWhere(params)}`;
         return new Promise((resolve, reject) => {
             connection.query(query, (err, rows) => {
                 resolve(Array.from(rows).map(row => new Stop(row)));
             });
         });
+    }
+    static async getByName(name) {
+        return Stop.where({ name });
+    }
+    static analyzeWhere(params) {
+        const answer = Object.keys(params).map(param => {
+            return `${param} = '${params[param]}'`;
+        });
+        return answer.length ? `WHERE ${answer.join(' AND ')}` : '';
     }
 }
 

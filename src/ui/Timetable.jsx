@@ -6,12 +6,12 @@ import Timer from './Timer'
  * @param {Object} props
  */
 export default function Timetable(props) {
-    const { data, columns } = props;
+    const { stop, data, columns } = props;
     const [headers, widths, items] = dataTransform(data, columns);
     return (
         <div className="Timetable">
             <div className="Timetable__top">
-                <div className="Timetable__stop">Callate la boca</div>
+                <div className="Timetable__stop">{stop.name}</div>
                 <div className="Timetable__timer">
                     <Timer/>
                 </div>
