@@ -1,7 +1,7 @@
 import React from 'react';
 import './Timetable.scss';
 import Timer from './Timer';
-import { wordsFormat } from '../helpers/Time';
+import { timeFormat } from '../helpers/Time';
 
 /**
  * @param {Object} props
@@ -47,7 +47,20 @@ export const Cell = (props) => {
 };
 
 export const TimeFormat = (props) => {
-    return wordsFormat(props.value, 'h час|i мин', true);
+    let format;
+    const secs = props.value / 1000;
+    switch (true) {
+        case secs < 60:
+            format = '< мин';
+            break;
+        case secs < 3600:
+            format = 'i мин';
+            break;
+        default:
+            format = 'h час i мин';
+            break;
+    }
+    return timeFormat(props.value, format);
 };
 
 /**

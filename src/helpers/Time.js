@@ -1,8 +1,15 @@
 function timeFormat(dateTime, format = 'hh:ii:ss') {
-    const d = analyzeDatetime(dateTime);
-    let h = d[0],
-        m = d[1],
-        s = d[2];
+    let h, m, s;
+    if (dateTime instanceof Date) {
+        h = dateTime.getHours();
+        m = dateTime.getMinutes();
+        s = dateTime.getSeconds();
+    } else {
+        const time = dateTime / 1000;
+        h = Math.floor(time / 3600);
+        m = Math.floor((time - h * 3600) / 60);
+        s = Math.floor(time - (h * 3600) - (m * 60));
+    }
     return format.replace(/h+|i+|s+/g, str => {
         switch (str) {
             case 'hh':
@@ -23,46 +30,6 @@ function timeFormat(dateTime, format = 'hh:ii:ss') {
     });
 }
 
-function wordsFormat(dateTime, format, notZero = false) {
-    if (format.match(/\|/)) {
-        return format.split('|').map(part => wordsFormat(dateTime, part, notZero)).join(' ');
-    } else {
-        const d = analyzeDatetime(dateTime);
-        const l = (x, y) => notZero ? x > 0 ? x+y : '' : x+y;
-        let h = d[0],
-            m = d[1],
-            s = d[2];
-        return format.replace(/([his])+(.+)/g, (match, str, suffix) => {
-            switch (str) {
-                case 'h':
-                    return l(h, suffix);
-                case 'i':
-                    return l(m, suffix) || `> ${suffix}`;
-                case 's':
-                    return l(s, suffix);
-                default:
-                    return str;
-            }
-        });
-    }
-}
-
-function analyzeDatetime(dateTime) {
-    if (dateTime instanceof Date) {
-        return [
-            dateTime.getHours(),
-            dateTime.getMinutes(),
-            dateTime.getSeconds()
-        ];
-    } else {
-        const time = dateTime / 1000;
-        const h = Math.floor(time / 3600);
-        const m = Math.floor((time - h * 3600) / 60);
-        const s = Math.floor(time - (h * 3600) - (m * 60));
-        return [h, m, s];
-    }
-}
-
 function doubleDigit(dig) {
     return (dig < 10 ? '0' : '') + dig;
 }
@@ -76,6 +43,5 @@ function timestampTime(time) {
 }
 
 module.exports.timeFormat = timeFormat;
-module.exports.wordsFormat = wordsFormat;
 module.exports.timeSub = timeSub;
 module.exports.timestampTime = timestampTime;
