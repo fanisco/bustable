@@ -47,7 +47,7 @@ export default class App extends Component {
                     columns={{
                         route: { title: '№', align: 'left', width: '10%' },
                         destination: { title: 'Направление', align: 'left', width: '1fr' },
-                        timestamp: { title: 'Прибытие', align: 'right', width: '20%', template: TimeFormat }
+                        delta: { title: 'Прибытие', align: 'right', width: '20%', template: TimeFormat }
                     }}
                 />
             </div>

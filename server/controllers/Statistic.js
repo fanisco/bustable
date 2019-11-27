@@ -39,7 +39,14 @@ ORDER BY rs.number ASC
                 sd: standard(values)
             };
         });
+    },
+    getRouteMapped(stats) {
+        const result = {};
+        for (const routeStats of stats) {
+            result[routeStats[0].routeId] = routeStats;
+        }
+        return result;
     }
 };
 
-module.exports = Statistic;
+export default Statistic;
