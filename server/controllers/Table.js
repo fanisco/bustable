@@ -111,9 +111,10 @@ ORDER BY t.time ASC
     /**
      *
      */
-    mergeBusesWithStops(buses, stops) {
+    async mergeBusesWithStops(buses, stops) {
         for (let i = 0; i < buses.length; i++) {
-            buses[i].currentStop = stops[i];
+            const [stop] = await Stop.where({ id: stops[i] });
+            buses[i].currentStop = stop;
         }
         return buses;
     },
@@ -134,7 +135,7 @@ ORDER BY t.time ASC
     async getTableRoute(routeId, time, timeLimit, duration) {
         const result = await Connection.query(this.query({ routeId, time, timeLimit, delay: duration }));
         return result.map(row => {
-            return { ...row, routeId, duration, delta: timeSub(row.arrival, time) };
+            return { ...row, routeId, delta: timeSub(row.arrival, time) };
         });
     }
 };

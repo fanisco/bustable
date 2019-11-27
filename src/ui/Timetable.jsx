@@ -63,6 +63,10 @@ export const TimeFormat = (props) => {
     return timeFormat(props.value, format);
 };
 
+export const BusStop = (props) => {
+    return props.value && props.value.name;
+};
+
 /**
  * @param {Array} rows
  * @param {Object} columns
