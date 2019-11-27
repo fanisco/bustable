@@ -1,6 +1,7 @@
-const connection = require('../db/connection').getInstance();
-const Statistic = require('./Statistic');
-const Stop = require('../models/Stop');
+import Connection from '../db/connection';
+import Statistic from './Statistic';
+import Stop from '../models/Stop';
+
 const { timeSub, timeFormat } = require('../../src/helpers/Time');
 
 const Table = {
@@ -91,20 +92,15 @@ ORDER BY t.time ASC
      *
      */
     async getTableRoute(routeId, time, timeLimit, delay) {
-        return new Promise((resolve, reject) => {
-            connection.query(this.query({ routeId, time, timeLimit, delay }), (err, rows) => {
-
-                // Calculate estimate time for each row
-                resolve(rows.map(row => {
-                    const arrivalTime = timeSub(row.arrival, time);
-                    return {
-                        ...row,
-                        timestamp: arrivalTime
-                    };
-                }));
-            });
+        const result = await Connection.query(this.query({ routeId, time, timeLimit, delay }));
+        return result.map(row => {
+            const arrivalTime = timeSub(row.arrival, time);
+            return {
+                ...row,
+                timestamp: arrivalTime
+            };
         });
     }
 };
 
-module.exports = Table;
+export default Table;

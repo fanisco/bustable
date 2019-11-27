@@ -1,22 +1,24 @@
-const mysql = require('mysql');
-require('dotenv').config();
+import mysql from 'mysql';
+import 'dotenv/config';
+
+const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS
+    });
+connection.connect();
 
 /**
  * Mysql connection.
  */
 const Connection = {
-    instance: null,
-    getInstance() {
-        if (!this.instance) {
-            this.instance = mysql.createConnection({
-                host: process.env.DB_HOST,
-                user: process.env.DB_USER,
-                password: process.env.DB_PASS
+    async query(query) {
+        return new Promise((resolve, reject) => {
+            connection.query(query, (err, rows) => {
+                resolve(Array.from(rows));
             });
-            this.instance.connect();
-        }
-        return this.instance;
+        });
     }
 };
 
-module.exports = Connection;
+export default Connection;

@@ -1,9 +1,11 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-const Table = require('./server/controllers/Table');
-const Stop = require('./server/models/Stop');
-require('dotenv').config();
+import 'dotenv/config';
+import express from 'express';
+import bodyParser from 'body-parser';
+import path from 'path';
+import Stop from './server/models/Stop';
+import Route from './server/models/Route';
+import Table from './server/controllers/Table';
+
 const app = express();
 
 app.use(express.static(path.join(__dirname, 'build')));
@@ -11,6 +13,11 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
+
+app.get('/api/route/:id', function (req, res) {
+    Route.where({ id: req.params.id }).then(result => res.json(result[0]));
+});
+
 app.get('/api/stop/:id', function (req, res) {
     Stop.where({ id: req.params.id }).then(result => res.json(result[0]));
 });

@@ -1,5 +1,5 @@
-const connection = require('../db/connection').getInstance();
-const rv = require('../math/RandomVariable');
+import Connection from '../db/connection';
+import { expected, variance, standard } from '../math/RandomVariable';
 
 const Statistic = {
     query: ({ stopId, routeId }) => `
@@ -28,21 +28,16 @@ ORDER BY rs.number ASC
      * Get rows from database with given params.
      */
     async get({ stopId, routeId }) {
-        return new Promise((resolve, reject) => {
-            connection.query(this.query({ stopId, routeId }), (err, rows) => {
-                const result = [];
-                for (const row of rows) {
-                    const values = row.values.split(',').map(value => parseFloat(value));
-                    result.push({
-                        ...row,
-                        values,
-                        mx: rv.mx(values),
-                        dx: rv.dx(values),
-                        sd: rv.standard(values)
-                    });
-                }
-                resolve(result);
-            });
+        const result = await Connection.query(this.query({ stopId, routeId }));
+        return result.map(row => {
+            const values = row.values.split(',').map(value => parseFloat(value));
+            return {
+                ...row,
+                values,
+                mx: expected(values),
+                dx: variance(values),
+                sd: standard(values)
+            };
         });
     }
 };

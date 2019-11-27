@@ -1,35 +1,29 @@
-const connection = require('../db/connection').getInstance();
+import Connection from '../db/connection';
+import Model from './Model';
 
-class Stop {
-    constructor(data) {
-        this.id = data.id;
-        this.name = data.name;
+export default class Stop extends Model {
+    static _table = 'logistics.stops';
+    static _fields = ['id', 'name'];
+
+    constructor({ id, name }) {
+        super();
+        this.id = id;
+        this.name = name;
     }
-    async getRoutes() {
-        const query = `SELECT route_id AS routeId FROM logistics.routes_stops WHERE stop_id = '${this.id}'`;
-        return new Promise((resolve, reject) => {
-            connection.query(query, (err, rows) => {
-                resolve(Array.from(rows).map(row => row.routeId));
-            });
-        });
-    }
+
+    /**
+     * @param {Object} params
+     * @return {Route[]}
+     */
     static async where(params) {
-        const query = `SELECT id, name FROM logistics.stops ${Stop.analyzeWhere(params)}`;
-        return new Promise((resolve, reject) => {
-            connection.query(query, (err, rows) => {
-                resolve(Array.from(rows).map(row => new Stop(row)));
-            });
-        });
+        return Model._where(params, Stop);
     }
     static async getByName(name) {
         return Stop.where({ name });
     }
-    static analyzeWhere(params) {
-        const answer = Object.keys(params).map(param => {
-            return `${param} = '${params[param]}'`;
-        });
-        return answer.length ? `WHERE ${answer.join(' AND ')}` : '';
+    async getRoutes() {
+        const query = `SELECT route_id AS routeId FROM logistics.routes_stops WHERE stop_id = '${this.id}'`;
+        const result = await Connection.query(query);
+        return result.map(row => row.routeId);
     }
 }
-
-module.exports = Stop;
