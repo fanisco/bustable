@@ -18,11 +18,15 @@ export default class App extends Component {
         const table = await this.getTable(stop.id);
         this.setState({ table });
 
-        // Refresh data
-        setInterval(async () => {
+        // Repeating XHR
+        const repeating = async () => {
             const table = await this.getTable(stop.id);
             this.setState({ table });
-        }, 60000);
+            return runAtZero(repeating);
+        };
+
+        // Refresh data
+        await repeating();
     }
     async getStop(stopId) {
         const url = `/api/stop/${stopId}`;
@@ -50,3 +54,13 @@ export default class App extends Component {
         );
     }
 }
+
+const interval = process.env.REACT_APP_REFRESH_INTERVAL;
+
+const runAtZero = (fn) => {
+    const date = new Date();
+    const ms = date.getSeconds() * 1000 + date.getMilliseconds();
+    return setTimeout(fn, lim(interval - ms, 0, interval));
+};
+
+const lim = (val, min, max) => Math.max(Math.min(val, max), min);
