@@ -1,5 +1,6 @@
 import Connection from '../db/connection';
 import { expected, variance, standard } from '../math/RandomVariable';
+import precise from './precise';
 
 const Statistic = {
     query: ({ stopId, routeId }) => `
@@ -28,15 +29,16 @@ ORDER BY rs.number ASC
      * Get rows from database with given params.
      */
     async get({ stopId, routeId }) {
+        const minInMils = 60 * 1000;
         const result = await Connection.query(this.query({ stopId, routeId }));
         return result.map(row => {
             const values = row.values.split(',').map(value => parseFloat(value));
             return {
                 ...row,
                 values,
-                mx: expected(values),
-                dx: variance(values),
-                sd: standard(values)
+                mx: precise(expected(values), minInMils),
+                dx: precise(variance(values), minInMils),
+                sd: precise(standard(values), minInMils)
             };
         });
     },

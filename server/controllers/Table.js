@@ -1,13 +1,14 @@
 import Connection from '../db/connection';
 import Statistic from './Statistic';
 import Stop from '../models/Stop';
+import precise from './precise';
 
 const { timeSub, timeFormat } = require('../../src/helpers/Time');
 
 const Table = {
     query: ({ routeId, time, timeLimit, delay } = {}) => `
 SELECT
-    r.number AS route, s1.name AS destination, date_add(t.time, INTERVAL ${delay} MINUTE) AS arrival
+    r.number AS route, s1.name AS destination, date_add(t.time, INTERVAL ${delay} MINUTE_SECOND) AS arrival
 FROM
     logistics.timetable AS t
     LEFT JOIN logistics.routes AS r
@@ -16,8 +17,8 @@ FROM
         ON t.dest_id = s1.id
 WHERE 1
     AND r.id = '${routeId}'
-    AND date_add(t.time, INTERVAL ${delay} MINUTE) >= '${time}'
-    AND date_add(t.time, INTERVAL ${delay} MINUTE) <= '${timeLimit}'
+    AND date_add(t.time, INTERVAL ${delay} MINUTE_SECOND) >= '${time}'
+    AND date_add(t.time, INTERVAL ${delay} MINUTE_SECOND) <= '${timeLimit}'
 ORDER BY t.time ASC
 `,
 
@@ -29,7 +30,6 @@ ORDER BY t.time ASC
         // Current time
         const now = new Date();
         const time = timeFormat(now);
-        const timeLimit = timeFormat(new Date(now.getTime() + 3 * 60 * 60 * 1000));
 
         // Get busstop and its routes
         const [stop] = await Stop.where({ id: stopId });
@@ -40,37 +40,38 @@ ORDER BY t.time ASC
         const delayedRoutes = this.mergeData(routes, stats);
 
         // With resulted data get rows
-        const busesByRoutes = await this.getTableRoutes(delayedRoutes, time, timeLimit);
+        const busesByRoutes = await this.getTableRoutes(delayedRoutes, time);
         const buses = this.mergeTables(busesByRoutes);
-        const stops = this.getCurrentStops(buses, Statistic.getRouteMapped(stats));
-        return this.mergeBusesWithStops(buses, stops);
+        await this.addCurrentStops(buses, Statistic.getRouteMapped(stats));
+        return buses;
     },
 
     /**
      *
      */
-    getCurrentStops(buses, allStats) {
-        return buses.map(bus => {
+    async addCurrentStops(buses, allStats) {
+        for (const bus of buses) {
             const routeId = bus.routeId;
             const stats = allStats[routeId];
 
             if (!stats || !stats.length) {
-                return null;
+                return;
             }
 
             // Time left
             let delta = bus.delta / 60 / 1000;
 
             // Iterating from the end, until delta is over - so we find current bus's stop from our position
-            for (const stat of stats.reverse()) {
+            for (const stat of [...stats].reverse()) {
                 if (delta >= stat.mx) {
                     delta -= stat.mx;
                 } else {
-                    return stat.stopId;
+                    const [stop] = await Stop.where({ id: stat.stopId });
+                    bus.currentStop = stop;
+                    break;
                 }
             }
-            return null;
-        });
+        }
     },
 
 
@@ -86,9 +87,10 @@ ORDER BY t.time ASC
      */
     mergeData(routes, stats) {
         return routes.map((routeId, i) => {
+            const duration = stats[i].map(item => item.mx).reduce((sum, i) => sum + i, 0);
             return {
                 routeId,
-                delay: stats[i].map(item => item.mx).reduce((sum, i) => sum + i, 0)
+                delay: precise(duration, 60 * 1000)
             }
         });
     },
@@ -111,31 +113,28 @@ ORDER BY t.time ASC
     /**
      *
      */
-    async mergeBusesWithStops(buses, stops) {
-        for (let i = 0; i < buses.length; i++) {
-            const [stop] = await Stop.where({ id: stops[i] });
-            buses[i].currentStop = stop;
-        }
-        return buses;
-    },
-
-    /**
-     *
-     */
-    async getTableRoutes(routes, time, timeLimit) {
-        return Promise.all(routes.map(({ routeId, delay }) => this.getTableRoute(routeId, time, timeLimit, delay)));
+    async getTableRoutes(routes, time) {
+        return Promise.all(routes.map(({ routeId, delay }) => this.getTableRoute(routeId, time, delay)));
     },
 
     /**
      * @param {Number} routeId
      * @param {String} time
-     * @param {String} timeLimit
      * @param {Number} duration Average route duration from A to our position.
      */
-    async getTableRoute(routeId, time, timeLimit, duration) {
+    async getTableRoute(routeId, time, duration) {
+        const maxLimit = 3;
+        const minInMils = 60 * 1000;
+        const hrsInMils = 60 * minInMils;
+
+        // Max limit is 3 hours, compare it with duration
+        const limit = Math.min(Math.ceil(duration * minInMils), maxLimit * hrsInMils);
+        const timeLimit = timeFormat(new Date((new Date()).getTime() + limit));
+
+        // Query with limit by time
         const result = await Connection.query(this.query({ routeId, time, timeLimit, delay: duration }));
         return result.map(row => {
-            return { ...row, routeId, delta: timeSub(row.arrival, time) };
+            return { ...row, routeId, duration, delta: timeSub(row.arrival, time) };
         });
     }
 };
