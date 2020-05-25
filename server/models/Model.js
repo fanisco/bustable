@@ -1,4 +1,5 @@
 import Connection from '../db/connection';
+import {type} from "mathjs";
 
 export default class Model {
 
@@ -25,9 +26,17 @@ export default class Model {
      * @return {String}
      */
     static analyzeWhere(params) {
-        const answer = Object.keys(params).map(param => {
-            return `${param} = '${params[param]}'`;
+        const statement = Object.keys(params).map(param => {
+            switch (true) {
+                case Array.isArray(params[param]) && params[param].length > 0:
+                    return `${param} IN ('${params[param].join('\',\'')}')`;
+                case typeof params[param] === 'string':
+                case typeof params[param] === 'number':
+                    return `${param} = '${params[param]}'`;
+                default:
+                    return '1=1';
+            }
         });
-        return answer.length ? `WHERE ${answer.join(' AND ')}` : '';
+        return statement.length ? `WHERE ${statement.join(' AND ')}` : '';
     }
 }
