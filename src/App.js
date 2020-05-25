@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Timetable, { TimeFormat, BusStop } from './ui/Timetable';
+import Timetable from './ui/Timetable';
+import Route from './ui/cells/Route';
+import Stop from './ui/cells/Stop';
+import Arrival from './ui/cells/Arrival';
 
 export default class App extends Component {
     constructor(props) {
@@ -34,7 +37,7 @@ export default class App extends Component {
         return res.data;
     }
     async getTable(stopId) {
-        const url = `/api/table?stopId=${stopId}`;
+        const url = `/api/gpstable?stopId=${stopId}`;
         const res = await axios(url);
         return res.data;
     }
@@ -45,10 +48,10 @@ export default class App extends Component {
                     stop={this.state.stop}
                     table={this.state.table}
                     columns={{
-                        route: { title: '№', align: 'left', width: '10%' },
-                        currentStop: { title: '', align: 'left', width: '1fr', template: BusStop },
-                        destination: { title: 'Направление', align: 'left', width: '1fr' },
-                        delta: { title: 'Прибытие', align: 'right', width: '20%', template: TimeFormat }
+                        route: { title: '№', align: 'left', width: '10%', template: Route },
+                        destination: { title: '', align: 'left', width: '1fr', template: Stop },
+                        stop: { title: 'Направление', align: 'left', width: '1fr', template: Stop },
+                        arrival: { title: 'Прибытие', align: 'right', width: '20%', template: Arrival }
                     }}
                 />
             </div>

@@ -42,29 +42,8 @@ export default function Timetable(props) {
  */
 export const Cell = (props) => {
     return (
-        <div className={`Timetable__cell Timetable__cell_${props.align}`}>{props.template ? props.template(props) : props.value}</div>
+        <div className={`Timetable__cell Timetable__cell_${props.align}`}>{props.template ? <props.template {...props}/> : typeof props.value !== 'object' ? props.value : ''}</div>
     );
-};
-
-export const TimeFormat = (props) => {
-    let format;
-    const secs = props.value / 1000;
-    switch (true) {
-        case secs < 60:
-            format = '< мин';
-            break;
-        case secs < 3600:
-            format = 'i мин';
-            break;
-        default:
-            format = 'h час i мин';
-            break;
-    }
-    return timeFormat(props.value, format);
-};
-
-export const BusStop = (props) => {
-    return props.value && props.value.name;
 };
 
 /**

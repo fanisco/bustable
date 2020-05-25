@@ -42,6 +42,32 @@ function timestampTime(time) {
     return (new Date('1970-01-01T' + time)).getTime()
 }
 
+function leftTime(s, minVal) {
+    let format;
+    switch (true) {
+        case s < 60:
+            format = 's сек';
+            break;
+        case s < minVal:
+            format = 'i мин s сек';
+            break;
+        case s < 3600:
+            format = 'i мин';
+            break;
+        default:
+            format = 'h час i мин';
+    }
+    console.log(s, format, minVal);
+    return timeFormat(s * 1000, format);
+}
+
+function parseToSeconds(t) {
+    const a = t.replace(/\.\d+/, '').split(':');
+    return (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+}
+
 module.exports.timeFormat = timeFormat;
 module.exports.timeSub = timeSub;
 module.exports.timestampTime = timestampTime;
+module.exports.leftTime = leftTime;
+module.exports.parseToSeconds = parseToSeconds;
