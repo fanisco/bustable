@@ -46,7 +46,7 @@ export default class App extends Component {
                     table={this.state.table}
                     columns={{
                         route: { title: '№', align: 'left', width: '10%' },
-                        currentStop: { title: '', align: 'left', width: '20%', template: BusStop },
+                        currentStop: { title: '', align: 'left', width: '1fr', template: BusStop },
                         destination: { title: 'Направление', align: 'left', width: '1fr' },
                         delta: { title: 'Прибытие', align: 'right', width: '20%', template: TimeFormat }
                     }}

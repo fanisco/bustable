@@ -3,12 +3,13 @@ import Model from './Model';
 
 export default class Stop extends Model {
     static _table = 'logistics.stops';
-    static _fields = ['id', 'name'];
+    static _fields = ['id', 'name', 'zoneId'];
 
-    constructor({ id, name }) {
+    constructor({ id, name, zoneId }) {
         super();
         this.id = id;
         this.name = name;
+        this.zoneId = zoneId;
     }
 
     /**
@@ -17,6 +18,10 @@ export default class Stop extends Model {
      */
     static async where(params) {
         return Model._where(params, Stop);
+    }
+    static async getById(id) {
+        const req = await Stop.where({ id });
+        return req[0];
     }
     static async getByName(name) {
         return Stop.where({ name });

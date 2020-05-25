@@ -45,7 +45,9 @@ ORDER BY rs.number ASC
     getRouteMapped(stats) {
         const result = {};
         for (const routeStats of stats) {
-            result[routeStats[0].routeId] = routeStats;
+            if (routeStats[0]) {
+                result[routeStats[0].routeId] = routeStats;
+            }
         }
         return result;
     }
