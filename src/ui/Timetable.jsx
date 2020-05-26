@@ -41,8 +41,15 @@ export default function Timetable(props) {
  * @param {Object} props
  */
 export const Cell = (props) => {
+    let render = '';
+    if (props.template) {
+        render = <props.template {...props}/>;
+    }
+    if (typeof props.value !== 'object') {
+        render = props.value;
+    }
     return (
-        <div className={`Timetable__cell Timetable__cell_${props.align}`}>{props.template ? <props.template {...props}/> : typeof props.value !== 'object' ? props.value : ''}</div>
+        <div className={`Timetable__cell Timetable__cell_${props.align}`}>{render}</div>
     );
 };
 

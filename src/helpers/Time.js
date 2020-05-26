@@ -57,7 +57,6 @@ function leftTime(s, minVal) {
         default:
             format = 'h час i мин';
     }
-    console.log(s, format, minVal);
     return timeFormat(s * 1000, format);
 }
 
