@@ -10,9 +10,9 @@ const app = express();
 const middle = (fn, req, res) => {
     try {
         fn();
-    } catch(e) {
+   } catch(e) {
         res.json({error: e.message});
-    }
+   }
 };
 
 app.use(express.static(path.join(__dirname, 'build')));
@@ -22,19 +22,26 @@ app.get('/', function (req, res) {
 });
 
 app.get('/api/route/:id', function (req, res) {
-    Route.where({ id: req.params.id }).then(result => res.json(result[0]));
+    Route.where({id: req.params.id}).then(result => res.json(result[0]));
 });
 
 app.get('/api/stop/:id', function (req, res) {
-    Stop.where({ id: req.params.id }).then(result => res.json(result[0]));
+    Stop.where({id: req.params.id}).then(result => res.json(result[0]));
 });
 
 app.get('/api/table', function (req, res) {
-    Table.get({ stopId: req.query.stopId }).then(result => res.json(result));
+    Table.get({stopId: req.query.stopId}).then(result => res.json(result));
 });
 
-app.get('/api/gpstable', function (req, res) {
-    thirdparty.get({ stopId: req.query.stopId }).then(result => res.json(result));
+app.get('/api/gpstable/:id', function (req, res) {
+    thirdparty.get({stopId: req.params.id}).then(result => res.json(result));
+});
+
+app.get('/api/checkway', function (req, res) {
+    thirdparty.isStopOnTheWay({
+        stopId: req.query.stopId,
+        objectId: req.query.objectId
+    }).then(result => res.json(result));
 });
 
 app.listen(process.env.PORT, function () {

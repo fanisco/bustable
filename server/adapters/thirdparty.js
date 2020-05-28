@@ -32,6 +32,7 @@ const thirdparty = {
         return req.json();
     },
     async get({stopId, types}) {
+        // return [{"route":{"name":"87","type":"маршрутное такси"},"destination":{"name":"Ул. Крымская"},"stop":{"name":"Музей изобразительных искусств (в центр)"},"arrival":{"time":"2020-05-26T12:22:23","wait":"00:00:34.4070000"}}];
         if (!types) {
             types = [
                 this._types.bus,
@@ -42,27 +43,48 @@ const thirdparty = {
         }
         const stop = await Stop.getById(stopId);
         const comings = await this.api('comings', stop.zoneId);
-        return Promise.all(comings.map(coming => this._getMoreInfoForComming(coming)));
+        return Promise.all(comings.map((coming, i) => this._getMoreInfoForComming(coming, i + 1)));
     },
-    async _getMoreInfoForComming(coming) {
-        const stops = await this.api('stops', coming.object.id);
+    async isStopOnTheWay({stopId, objectId}) {
+        const stop = await Stop.getById(stopId);
+        const objInfo = await this.api('stops', objectId);
+        if (objInfo.nextStops) {
+            for (const nextStop of objInfo.nextStops) {
+                if (nextStop.zones) {
+                    for (const zone of nextStop.zones) {
+                        if (zone.id === stop.zoneId) {
+                            return {objectId, stopId, is: true};
+                        }
+                    }
+                }
+            }
+        }
+        return {objectId, stopId, is: false};
+    },
+    async _getMoreInfoForComming(comming, n) {
+        let stops;
+        if (n <= 10) {
+            stops = await this.api('stops', comming.object.id);
+        }
         return {
+            objectId: comming.object.id,
             route: {
-                name: coming.route.name.replace(/\d\./g, ''),
-                type: this._typesRus[coming.route.vt],
+                name: comming.route.name.replace(/\d\./g, ''),
+                type: this._typesRus[comming.route.vt],
             },
             destination: {
-                name: coming.direction.endName
+                name: comming.direction.endName
             },
             stop: {
-                name: stops.priorStop && stops.priorStop.zones[0].name
+                name: stops && stops.priorStop && stops.priorStop.zones[0].name
             },
             arrival: {
-                time: coming.time,
-                wait: coming.wait,
+                time: comming.time,
+                wait: comming.wait,
             }
         };
     },
+
 // Response example:
 // [{
 //     "time":"2020-05-25T20:53:13",
