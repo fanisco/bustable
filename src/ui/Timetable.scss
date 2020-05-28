@@ -1,27 +1,9 @@
 .Timetable {
-	color: #ffb535;
-	background-color: #202020;
+	display: grid;
+	width: 100%;
+	padding-left: 20px;
+	padding-right: 20px;
 
-	&__top {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-		padding: 10px 20px;
-	}
-	&__stop {
-		font-size: 28px;
-		line-height: 1;
-	}
-	&__timer {
-
-	}
-	&__grid {
-		display: grid;
-		width: 100%;
-		padding-left: 20px;
-		padding-right: 20px;
-	}
 	&__header {
 		display: contents;
 	}
