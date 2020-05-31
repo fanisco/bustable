@@ -20,7 +20,7 @@ export default function reducer(state, action) {
         case CHECK_WAY:
             return {
                 ...state,
-                table: state.table.filter(row => row.objectId !== action.data.objectId || action.data.is)
+                table: action.data.is ? state.table : state.table.filter(row => row.objectId !== action.data.objectId)
             };
         default:
             return state;
