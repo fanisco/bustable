@@ -1,23 +1,13 @@
 import Stop from '../models/Stop';
+import {typeNames, typeCodes} from './g2b/types';
+import {atob} from 'atob';
 const fetch = require('node-fetch');
-const base = ['https://', 'go', '2', 'bus', '.ru'];
+const base = atob('aHR0cHM6Ly9nbzJidXMucnU=');
 
 /**
  * Получаем геопозиции автобусов из стороннего источника.
  */
 const thirdparty = {
-    _types: {
-        bus: 'b',
-        routeTaxi: 'rt',
-        trolleyBus: 'tb',
-        tram: 'tr',
-    },
-    _typesRus: {
-        b: 'автобус',
-        rt: 'маршрутное такси',
-        tb: 'троллейбус',
-        tr: 'трамвай',
-    },
     async api(action, ...args) {
         let url;
         switch (action) {
@@ -31,16 +21,8 @@ const thirdparty = {
         const req = await fetch(url);
         return req.json();
     },
-    async get({stopId, types}) {
+    async get({stopId}) {
         // return [{"route":{"name":"87","type":"маршрутное такси"},"destination":{"name":"Ул. Крымская"},"stop":{"name":"Музей изобразительных искусств (в центр)"},"arrival":{"time":"2020-05-26T12:22:23","wait":"00:00:34.4070000"}}];
-        if (!types) {
-            types = [
-                this._types.bus,
-                this._types.routeTaxi,
-                this._types.trolleyBus,
-                this._types.tram
-            ];
-        }
         const stop = await Stop.getById(stopId);
         const comings = await this.api('comings', stop.zoneId);
         return Promise.all(comings.map((coming, i) => this._getMoreInfoForComming(coming, i + 1)));
@@ -69,19 +51,30 @@ const thirdparty = {
         return {
             objectId: comming.object.id,
             route: {
-                name: comming.route.name.replace(/\d\./g, ''),
-                type: this._typesRus[comming.route.vt],
+                name: comming.route.name.replace(/\./g, ''),
+                type: typeNames[comming.route.vt],
+                code: typeCodes[comming.route.vt],
             },
-            destination: {
-                name: comming.direction.endName
-            },
-            stop: {
-                name: stops && stops.priorStop && stops.priorStop.zones[0].name
-            },
+            destination: this._parseStop(comming.direction.endName),
+            ...(stops && stops.priorStop ? {
+                stop: this._parseStop(stops.priorStop.zones[0].name)
+            } : {}),
             arrival: {
                 time: comming.time,
                 wait: comming.wait,
             }
+        };
+    },
+    _parseStop(stop) {
+        const [parts] = stop.matchAll(/(.+)\s\((.+)\)$/g, '');
+        if (!parts) {
+            return {
+                name: stop
+            };
+        }
+        return {
+            name: parts[1],
+            type: parts[2]
         };
     },
 
@@ -104,9 +97,9 @@ const thirdparty = {
 //         "endName":"СНТ "Победа" (конечная)"
 //     }
 // }]
-    _getNextComingsUrl: (zoneId, city = 'kal') => `${base.join('')}/infonextcomings?zoneId=${zoneId}&srv=${city}`,
-    _getNextStopsUrl: (objectId, city = 'kal') => `${base.join('')}/infonextstops?objectId=${objectId}&srv=${city}`,
-    _getStatesUrl: (routes, types, city = 'kal') => `${base.join('')}/inforoutestates?vt=${types.join(';')}&srv=${city}&route=${routes.join(';')}`
+    _getNextComingsUrl: (zoneId, city = 'kal') => `${base}/infonextcomings?zoneId=${zoneId}&srv=${city}`,
+    _getNextStopsUrl: (objectId, city = 'kal') => `${base}/infonextstops?objectId=${objectId}&srv=${city}`,
+    _getStatesUrl: (routes, types, city = 'kal') => `${base}/inforoutestates?vt=${types.join(';')}&srv=${city}&route=${routes.join(';')}`
 };
 
 export default thirdparty;

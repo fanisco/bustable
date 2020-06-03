@@ -44,6 +44,6 @@ app.get('/api/checkway', function (req, res) {
     }).then(result => res.json(result));
 });
 
-app.listen(process.env.PORT, function () {
-    console.log(`App listening on port ${process.env.PORT}!`);
+app.listen(process.env.SERVER_PORT, function () {
+    console.log(`App listening on port ${process.env.SERVER_PORT}!`);
 });

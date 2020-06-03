@@ -1,7 +1,8 @@
 import React from 'react';
+import './Stop.scss';
 
 export default function Stop({value}) {
     return (
-        <div>{value.name}</div>
+        <div className="Stop">{value.name}</div>
     );
 }

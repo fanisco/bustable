@@ -1,7 +1,10 @@
 import React from 'react';
+import './Route.scss';
 
 export default function Route({value}) {
     return (
-        <div>{value.name}</div>
+        <div className="Route">
+            <span className="Route__name">{value.code !== 'А' ? value.code : ''} {value.name}</span>
+        </div>
     );
 }
