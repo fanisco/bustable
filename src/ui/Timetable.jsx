@@ -1,24 +1,26 @@
-import React from 'react';
+import React, {useState} from 'react';
+import useWindowResize from '../hooks/useWindowResize';
 import './Timetable.scss';
 
 /**
  * @param {Object} props
  */
 export default function Timetable(props) {
-    const {table, columns} = props;
-    const [headers, widths, items] = dataTransform(table, columns);
+    const [width, setWidth] = useState(window.innerWidth);
+    const {table, items} = dataTransform(props, width);
+    useWindowResize(() => setWidth(window.innerWidth));
     return (
         <div className="Timetable" style={{
-            'gridTemplateColumns': widths.join(' ')
+            'gridTemplateColumns': table.map(col => col.width).join(' ')
         }}>
             <header className="Timetable__header">
-                {headers.map((header, i) => <Cell key={i} align={columns[header].align} value={columns[header].title}/>)}
+                {table.map((col, i) => <Cell key={i} align={col.align} value={col.title}/>)}
             </header>
             <main className="Timetable__items">
                 {items.map((item, i) => {
                     return (
                         <div key={i} className="Timetable__row">
-                            {item.columns.map((column, j) => <Cell key={j} {...column}/>)}
+                            {item.map((column, j) => <Cell key={j} {...column}/>)}
                         </div>
                     );
                 })}
@@ -44,34 +46,26 @@ export const Cell = (props) => {
 };
 
 /**
- * @param {Array} rows
+ * @param {Array} data
  * @param {Object} columns
+ * @param {Object} callbacks
+ * @param {Number} width
  */
-function dataTransform(rows, columns) {
-    const headers = [];
-    const widths = [];
+function dataTransform({data, columns, callbacks}, width) {
+    const table = columns.filter(col => !col.visibility || col.visibility(width));
     const items = [];
-    for (const row of rows) {
-        const item = { columns: [] };
-        const names = Object.keys(columns);
-        for (const name of names) {
-            if (headers.indexOf(name) === -1) {
-                headers.push(name);
-                widths.push(columns[name].width);
-            }
-            item.columns.push({
-                rawData: row,
-                name: name,
-                value: row[name],
-                title: columns[name].title,
-                align: columns[name].align || 'left',
-                width: columns[name].width || '1fr',
-                options: columns[name].options,
-                template: columns[name].template,
-                callbacks: columns[name].callbacks
-            });
-        }
-        items.push(item);
+    for (const row of data) {
+        items.push(table.map(col => ({
+            rawData: row,
+            name: col.name,
+            value: row[col.name],
+            title: col.title,
+            align: col.align || 'left',
+            width: col.width || '1fr',
+            options: col.options,
+            template: col.template,
+            callbacks
+        })));
     }
-    return [headers, widths, items];
+    return {table, items};
 }

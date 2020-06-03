@@ -4,9 +4,7 @@ import useInterval from './hooks/useInterval';
 import Header from './ui/Header';
 import Timetable from './ui/Timetable';
 import Status from './ui/Status';
-import Route from './ui/cells/Route';
-import Stop from './ui/cells/Stop';
-import Arrival from './ui/cells/Arrival';
+import columns from './ui/cells/columns';
 import {checkWay, getStop, getTable} from './state/actions';
 import './App.scss';
 
@@ -34,20 +32,10 @@ const App = () => {
         <div className="App">
             <Header stop={state.stop}/>
             <Timetable
-                table={state.table}
-                columns={{
-                    route: {title: '№', align: 'left', width: '10%', template: Route},
-                    destination: {title: '', align: 'left', width: '1fr', template: Stop},
-                    stop: {title: 'Направление', align: 'left', width: '1fr', template: Stop},
-                    arrival: {
-                        title: 'Прибытие',
-                        align: 'right',
-                        width: '20%',
-                        template: Arrival,
-                        callbacks: {
-                            needCheckWay: objectId => checkWay({dispatch, stopId, objectId})
-                        }
-                    }
+                data={state.table}
+                columns={columns}
+                callbacks={{
+                    needCheckWay: objectId => checkWay({dispatch, stopId, objectId})
                 }}
             />
             <Status status={state.status}/>
