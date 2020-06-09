@@ -3,6 +3,30 @@ import {typeNames, typeCodes} from './g2b/types';
 import {atob} from 'atob';
 const fetch = require('node-fetch');
 const base = atob('aHR0cHM6Ly9nbzJidXMucnU=');
+const example = [{
+    objectId: '',
+    route: {
+        name: 87,
+        type: 'маршрутное такси',
+        code: 'M'
+    },
+    destination: {
+        name: 'Ул. Крымская',
+        type: ''
+    },
+    stop: {
+        name:'Музей изобразительных искусств',
+        type: ''
+    },
+    arrival: {
+        time: '2020-05-26T12:22:23',
+        wait: '00:00:34.4070000'
+    },
+    seats: {
+        occupied: 12,
+        total: 32
+    }
+}];
 
 /**
  * Получаем геопозиции автобусов из стороннего источника.
@@ -22,7 +46,7 @@ const thirdparty = {
         return req.json();
     },
     async get({stopId}) {
-        // return [{"route":{"name":"87","type":"маршрутное такси"},"destination":{"name":"Ул. Крымская"},"stop":{"name":"Музей изобразительных искусств (в центр)"},"arrival":{"time":"2020-05-26T12:22:23","wait":"00:00:34.4070000"}}];
+        return example;
         const stop = await Stop.getById(stopId);
         const comings = await this.api('comings', stop.zoneId);
         return Promise.all(comings.map((coming, i) => this._getMoreInfoForComming(coming, i + 1)));
