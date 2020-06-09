@@ -1,6 +1,8 @@
 import Stop from '../models/Stop';
 import {typeNames, typeCodes} from './g2b/types';
 import {atob} from 'atob';
+import CoreException from '../core/CoreException';
+
 const fetch = require('node-fetch');
 const base = atob('aHR0cHM6Ly9nbzJidXMucnU=');
 const example = [{
@@ -45,13 +47,27 @@ const thirdparty = {
         const req = await fetch(url);
         return req.json();
     },
+
+    /**
+     * Таблица с геолокоцией и статистическими корректировками.
+     */
     async get({stopId}) {
-        return example;
+        if (!stopId) {
+            throw new CoreException('Внутренняя ошибка сервера');
+        }
+        // return example;
         const stop = await Stop.getById(stopId);
         const comings = await this.api('comings', stop.zoneId);
         return Promise.all(comings.map((coming, i) => this._getMoreInfoForComming(coming, i + 1)));
     },
+
+    /**
+     * Проверка: есть ли у автобуса в пути данная остановка.
+     */
     async isStopOnTheWay({stopId, objectId}) {
+        if (!stopId || !objectId) {
+            throw new CoreException('Внутренняя ошибка сервера');
+        }
         const stop = await Stop.getById(stopId);
         const objInfo = await this.api('stops', objectId);
         if (objInfo.nextStops) {
@@ -67,6 +83,10 @@ const thirdparty = {
         }
         return {objectId, stopId, is: false};
     },
+
+    /**
+     * Информация строчки таблицы.
+     */
     async _getMoreInfoForComming(comming, n) {
         let stops;
         if (n <= 10) {
@@ -86,6 +106,10 @@ const thirdparty = {
             arrival: {
                 time: comming.time,
                 wait: comming.wait,
+            },
+            seats: {
+                occupied: 12,
+                total: 32
             }
         };
     },
