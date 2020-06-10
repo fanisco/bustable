@@ -1,5 +1,5 @@
 import Connection from '../db/connection';
-import {type} from "mathjs";
+import CoreException from '../core/CoreException';
 
 export default class Model {
 
@@ -9,7 +9,7 @@ export default class Model {
      * @return {Promise}
      */
     static async _where(params, constructor) {
-        const { _table, _fields } = constructor;
+        const {_table, _fields} = constructor;
         if (!_table) {
             throw Error('Table is not specified.');
         }
@@ -19,6 +19,19 @@ export default class Model {
         const query = `SELECT ${_fields.join(', ')} FROM ${_table} ${Model.analyzeWhere(params)}`;
         const result = await Connection.query(query);
         return result.map(row => new constructor(row));
+    }
+
+    /**
+     * @param {Object} id
+     * @param {Function} constructor
+     * @return {Promise}
+     */
+    static async _getById(id, constructor) {
+        if (!id) {
+            throw new CoreException('Внутренняя ошибка сервера: не указан идентификатор');
+        }
+        const req = await Model._where({id}, constructor);
+        return req[0];
     }
 
     /**

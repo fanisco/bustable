@@ -20,8 +20,7 @@ export default class Stop extends Model {
         return Model._where(params, Stop);
     }
     static async getById(id) {
-        const req = await Stop.where({ id });
-        return req[0];
+        return Model._getById(id, Stop);
     }
     static async getByName(name) {
         return Stop.where({ name });

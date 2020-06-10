@@ -45,7 +45,7 @@ const thirdparty = {
                 url = this._getNextStopsUrl(...args);
                 break;
         }
-        console.log(url);
+        // console.log(url);
         const req = await fetch(url);
         return req.json();
     },
