@@ -1,7 +1,8 @@
 import Stop from '../models/Stop';
-import {typeNames, typeCodes} from './g2b/types';
+import {typeNames, typeCodes, typeSeats} from './g2b/types';
 import {atob} from 'atob';
 import CoreException from '../core/CoreException';
+import random from '../helpers/random';
 
 const fetch = require('node-fetch');
 const base = atob('aHR0cHM6Ly9nbzJidXMucnU=');
@@ -44,6 +45,7 @@ const thirdparty = {
                 url = this._getNextStopsUrl(...args);
                 break;
         }
+        console.log(url);
         const req = await fetch(url);
         return req.json();
     },
@@ -107,11 +109,15 @@ const thirdparty = {
                 time: comming.time,
                 wait: comming.wait,
             },
-            seats: {
-                occupied: 12,
-                total: 32
-            }
+            seats: this._getSeats(comming.route.vt)
         };
+    },
+    _getSeats(type) {
+        const seats = typeSeats[type];
+        return {
+            occupied: random(1, seats),
+            total: seats
+        }
     },
     _parseStop(stop) {
         const [parts] = stop.matchAll(/(.+)\s\((.+)\)$/g, '');
